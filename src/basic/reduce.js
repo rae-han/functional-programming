@@ -34,3 +34,5 @@ const reduce = (fn, acc, iter) => {
 };
 
 console.log(reduce(add, numbers));
+
+export default reduce;

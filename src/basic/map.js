@@ -28,3 +28,5 @@ console.log(
     })()
   )
 );
+
+export default map;

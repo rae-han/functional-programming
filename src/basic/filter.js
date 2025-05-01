@@ -29,3 +29,5 @@ const filter = (fn, iter) => {
 };
 
 console.log(filter((p) => p.price > 20000, products));
+
+export default filter;
