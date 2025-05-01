@@ -6,17 +6,15 @@ const products = [
   { name: "바지", price: 25000 },
 ];
 
-// const filter = () => {
-//   let result = [];
+let result = [];
 
-//   for (const item of products) {
-//     if (item.price > 20000) {
-//       result.push(item);
-//     }
-//   }
-// };
+for (const item of products) {
+  if (item.price > 20000) {
+    result.push(item);
+  }
+}
 
-// filter();
+console.log(result);
 
 const filter = (fn, iter) => {
   let result = [];
