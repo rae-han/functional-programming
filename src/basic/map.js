@@ -17,3 +17,14 @@ const map = (fn, iter) => {
 };
 
 console.log(map((p) => p.name, products));
+
+console.log(
+  map(
+    (p) => p.name,
+    (function* () {
+      yield { name: "반팔티", price: 15000 };
+      yield { name: "긴팔티", price: 20000 };
+      yield { name: "바지", price: 25000 };
+    })()
+  )
+);
