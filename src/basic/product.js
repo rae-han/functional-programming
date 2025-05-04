@@ -45,3 +45,22 @@ go(
 	reduce(add),
 	console.log,
 );
+
+const total_price = pipe(
+	map((p) => p.price),
+	reduce(add),
+);
+
+const base_total_price = (predicate) => pipe(filter(predicate), total_price);
+
+go(
+	products,
+	base_total_price((p) => p.price < 20000),
+	console.log,
+);
+
+go(
+	products,
+	base_total_price((p) => p.price >= 20000),
+	console.log,
+);
