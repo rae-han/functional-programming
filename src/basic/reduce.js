@@ -1,9 +1,11 @@
+import { curry } from './index.js';
+
 const numbers = [1, 2, 3, 4, 5];
 
 let total = 0;
 
 for (const item of numbers) {
-  total += item;
+	total += item;
 }
 
 console.log(total);
@@ -22,17 +24,17 @@ const add = (a, b) => a + b;
 // console.log(reduce(add, 0, numbers));
 
 const reduce = (fn, acc, iter) => {
-  if (!iter) {
-    iter = acc[Symbol.iterator]();
-    acc = iter.next().value;
-  }
+	if (!iter) {
+		iter = acc[Symbol.iterator]();
+		acc = iter.next().value;
+	}
 
-  for (const item of iter) {
-    acc = fn(acc, item);
-  }
-  return acc;
+	for (const item of iter) {
+		acc = fn(acc, item);
+	}
+	return acc;
 };
 
 console.log(reduce(add, numbers));
 
-export default reduce;
+export default curry(reduce);

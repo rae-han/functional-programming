@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/rae-han/functional-programming/issues"
   },
-  "homepage": "https://github.com/rae-han/functional-programming#readme"
+  "homepage": "https://github.com/rae-han/functional-programming#readme",
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  }
 }
