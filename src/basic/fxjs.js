@@ -76,3 +76,31 @@ L.range = function* (length) {
 		yield i;
 	}
 };
+
+export const take = curry((l, iter) => {
+	let res = [];
+
+	for (const a of iter) {
+		res.push(a);
+
+		if (res.length >= l) {
+			return res;
+		}
+	}
+
+	return res;
+});
+
+L.map = function* (f, iter) {
+	for (const a of iter) {
+		yield f(a);
+	}
+};
+
+L.filter = function* (f, iter) {
+	for (const a of iter) {
+		if (f(a)) {
+			yield a;
+		}
+	}
+};

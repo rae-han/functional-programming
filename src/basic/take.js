@@ -1,4 +1,4 @@
-import { range } from './fxjs.js';
+import { L, range } from './fxjs.js';
 
 const take = (l, iter) => {
 	let res = [];
@@ -14,6 +14,7 @@ const take = (l, iter) => {
 	return res;
 };
 
-console.log(take(5, range(10)));
+console.log(take(5, range(100)));
+console.log(take(5, L.range(100)));
 
 export default take;
