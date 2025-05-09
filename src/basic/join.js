@@ -1,5 +1,5 @@
-import { join, L } from './fxjs';
-import pipe from './pipe';
+import { join, L } from './fxjs.js';
+import pipe from './pipe.js';
 
 const obj = {
 	limit: 10,
@@ -9,11 +9,8 @@ const obj = {
 
 const queryStr = pipe(
 	Object.entries,
+	(a) => (console.log(a), a),
 	L.map(([k, v]) => `${k}=${v}`),
-	function (a) {
-		console.log(a);
-		return a;
-	},
 	join('&'),
 );
 

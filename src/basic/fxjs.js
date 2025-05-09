@@ -25,18 +25,19 @@ export const L = {};
 // 	return result;
 // });
 
-export const map = curry((fn, iter) => {
-	let result = [];
+// 2
+// export const map = curry((fn, iter) => {
+// 	let result = [];
 
-	iter = iter[Symbol.iterator]();
-	let cur;
-	while (!(cur = iter.next()).done) {
-		const a = cur.value;
-		result.push(fn(a));
-	}
+// 	iter = iter[Symbol.iterator]();
+// 	let cur;
+// 	while (!(cur = iter.next()).done) {
+// 		const a = cur.value;
+// 		result.push(fn(a));
+// 	}
 
-	return result;
-});
+// 	return result;
+// });
 
 // export const filter = curry((fn, iter) => {
 // 	let result = [];
@@ -50,20 +51,21 @@ export const map = curry((fn, iter) => {
 // 	return result;
 // });
 
-export const filter = curry((fn, iter) => {
-	let result = [];
+// 2
+// export const filter = curry((fn, iter) => {
+// 	let result = [];
 
-	iter = iter[Symbol.iterator]();
-	let cur;
-	while (!(cur = iter.next()).done) {
-		const a = cur.value;
-		if (fn(a)) {
-			result.push(a);
-		}
-	}
+// 	iter = iter[Symbol.iterator]();
+// 	let cur;
+// 	while (!(cur = iter.next()).done) {
+// 		const a = cur.value;
+// 		if (fn(a)) {
+// 			result.push(a);
+// 		}
+// 	}
 
-	return result;
-});
+// 	return result;
+// });
 
 // export const reduce = curry((fn, acc, iter) => {
 // 	if (!iter) {
@@ -152,24 +154,58 @@ export const take = curry((l, iter) => {
 	return res;
 });
 
-L.map = curry(function* (f, iter) {
-	console.log('map 2');
+// 로그를 하나하나 찍기 위한 명령형
+// L.map = curry(function* (f, iter) {
+// 	console.log('map 2');
+// 	for (const a of iter) {
+// 		console.log('map yield', { a });
+// 		yield f(a);
+// 	}
+// });
+// L.filter = curry(function* (f, iter) {
+// 	console.log('filter 1');
+// 	for (const a of iter) {
+// 		console.log('filter yield', { a, f: f(a) });
+// 		if (f(a)) {
+// 			yield a;
+// 		}
+// 	}
+// });
+
+L.map = curry(function* (fn, iter) {
 	for (const a of iter) {
-		console.log('map yield', { a });
-		yield f(a);
+		yield fn(a);
 	}
 });
-
-L.filter = curry(function* (f, iter) {
-	console.log('filter 1');
+L.filter = curry(function* (fn, iter) {
 	for (const a of iter) {
-		console.log('filter yield', { a, f: f(a) });
-		if (f(a)) {
-			yield a;
-		}
+		if (fn(a)) yield a;
 	}
 });
 
 export const join = curry((sep = ',', iter) =>
 	reduce((a, b) => `${a}${sep}${b}`, iter),
 );
+
+L.entries = function* (obj) {
+	for (const k in obj) yield [k, obj[k]];
+};
+
+export const find = curry((fn, iter) =>
+	go(iter, L.filter(fn), take(1), ([a]) => a),
+);
+
+// 3
+// export const map = curry((fn, iter) => go(
+//   iter,
+//   L.map(fn),
+//   take(Infinity) // take를 통해 모두 가져와준다.
+// ))
+
+export const takeAll = take(Infinity);
+
+// map 4
+export const map = curry(pipe(L.map, takeAll));
+
+// filter 3
+export const filter = curry(pipe(L.filter, takeAll));
