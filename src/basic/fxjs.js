@@ -15,27 +15,67 @@ export const curry =
 
 export const L = {};
 
+// export const map = curry((fn, iter) => {
+// 	let result = [];
+
+// 	for (const a of iter) {
+// 		result.push(fn(a));
+// 	}
+
+// 	return result;
+// });
+
 export const map = curry((fn, iter) => {
 	let result = [];
 
-	for (const item of iter) {
-		result.push(fn(item));
+	iter = iter[Symbol.iterator]();
+	let cur;
+	while (!(cur = iter.next()).done) {
+		const a = cur.value;
+		result.push(fn(a));
 	}
 
 	return result;
 });
 
+// export const filter = curry((fn, iter) => {
+// 	let result = [];
+
+// 	for (const a of iter) {
+// 		if (fn(a)) {
+// 			result.push(a);
+// 		}
+// 	}
+
+// 	return result;
+// });
+
 export const filter = curry((fn, iter) => {
 	let result = [];
 
-	for (const item of iter) {
-		if (fn(item)) {
-			result.push(item);
+	iter = iter[Symbol.iterator]();
+	let cur;
+	while (!(cur = iter.next()).done) {
+		const a = cur.value;
+		if (fn(a)) {
+			result.push(a);
 		}
 	}
 
 	return result;
 });
+
+// export const reduce = curry((fn, acc, iter) => {
+// 	if (!iter) {
+// 		iter = acc[Symbol.iterator]();
+// 		acc = iter...value;
+// 	}
+
+// 	for (const a of iter) {
+// 		acc = fn(acc, a);
+// 	}
+// 	return acc;
+// });
 
 export const reduce = curry((fn, acc, iter) => {
 	if (!iter) {
@@ -43,8 +83,11 @@ export const reduce = curry((fn, acc, iter) => {
 		acc = iter.next().value;
 	}
 
-	for (const item of iter) {
-		acc = fn(acc, item);
+	iter = iter[Symbol.iterator]();
+	let cur;
+	while (!(cur = iter.next()).done) {
+		const a = cur.value;
+		acc = fn(acc, a);
 	}
 	return acc;
 });
@@ -77,10 +120,28 @@ L.range = function* (length) {
 	}
 };
 
+// export const take = curry((l, iter) => {
+// 	let res = [];
+
+// 	for (const a of iter) {
+// 		res.push(a);
+
+// 		if (res.length >= l) {
+// 			return res;
+// 		}
+// 	}
+
+// 	return res;
+// });
+
 export const take = curry((l, iter) => {
+	console.log('take', { l, iter });
 	let res = [];
 
-	for (const a of iter) {
+	iter = iter[Symbol.iterator]();
+	let cur;
+	while (!(cur = iter.next()).done) {
+		const a = cur.value;
 		res.push(a);
 
 		if (res.length >= l) {
@@ -91,16 +152,24 @@ export const take = curry((l, iter) => {
 	return res;
 });
 
-L.map = function* (f, iter) {
+L.map = curry(function* (f, iter) {
+	console.log('map 2');
 	for (const a of iter) {
+		console.log('map yield', { a });
 		yield f(a);
 	}
-};
+});
 
-L.filter = function* (f, iter) {
+L.filter = curry(function* (f, iter) {
+	console.log('filter 1');
 	for (const a of iter) {
+		console.log('filter yield', { a, f: f(a) });
 		if (f(a)) {
 			yield a;
 		}
 	}
-};
+});
+
+export const join = curry((sep = ',', iter) =>
+	reduce((a, b) => `${a}${sep}${b}`, iter),
+);
