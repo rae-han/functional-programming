@@ -15,6 +15,7 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"baseUrl": ".",
+		"moduleDetection": "force",
 		"paths": {
 			"*": ["src/*"]
 		}
