@@ -12,6 +12,7 @@ console.log(go1(delay100(10), add5)); // [object Promise]5
 go1(delay100(10), add5).then(console.log);
 
 go1(go1(10, add5),console.log);
-go1(go1(delay100(10), add5),console.log);
+const res = go1(go1(delay100(10), add5), console.log);
+console.log(1, res);
 
 
