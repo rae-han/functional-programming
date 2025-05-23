@@ -3,11 +3,15 @@
     "node": true,
     "es2021": true
   },
-  "extends": ["eslint:recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended"
+  ],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
+  "plugins": ["prettier"],
   "rules": {
     "indent": ["error", 2],
     "newline-per-chained-call": [
@@ -15,6 +19,6 @@
       { "ignoreChainWithDepth": 0 }
     ],
     "no-console": "off",
-    "prettier/prettier": "off"
+    "prettier/prettier": "error"
   }
 }
