@@ -13,15 +13,25 @@ const getName = ({ name }) => name;
 const f = getName;
 const g = getUserById;
 
-const fg = (id) => f(g(id));
+// const fg = (id) => f(g(id));
 
-console.log(fg(2) === fg(2)); // true
+// console.log(fg(2) === fg(2)); // true
 
-const before = fg(2);
+// const before = fg(2);
+
+// users.pop();
+// users.pop();
+
+// const after = fg(2);
+
+// console.log(before == after);
+
+const fg = (id) =>
+  Promise.resolve(id).then(g).then(f);
+
+fg(2).then(console.log);
 
 users.pop();
 users.pop();
 
-const after = fg(2);
-
-console.log(before == after);
+fg(2).then(console.log);
