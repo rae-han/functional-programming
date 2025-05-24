@@ -7,7 +7,10 @@ const users = [
 ];
 
 const getUserById = (id) =>
-  find((user) => user.id === id, users);
+  find(
+    (user) => user.id === id,
+    users,
+  ) || Promise.reject('없어요!!');
 const getName = ({ name }) => name;
 
 const f = getName;
