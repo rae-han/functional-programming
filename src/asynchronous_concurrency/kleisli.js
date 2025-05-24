@@ -7,10 +7,7 @@ const users = [
 ];
 
 const getUserById = (id) =>
-  find(
-    (user) => user.id === id,
-    users,
-  ) || Promise.reject('없어요!!');
+  find((user) => user.id === id, users) || Promise.reject('없어요!!');
 const getName = ({ name }) => name;
 
 const f = getName;
@@ -30,11 +27,19 @@ const g = getUserById;
 // console.log(before == after);
 
 const fg = (id) =>
-  Promise.resolve(id).then(g).then(f);
+  Promise.resolve(id)
+    .then(g)
+    .then(f)
+    .catch((e) => e);
 
-fg(2).then(console.log);
+// fg(2).then(console.log);
 
 users.pop();
 users.pop();
 
 fg(2).then(console.log);
+g(2).then(console.log).catch(console.log);
+
+// fg(2).then(console.log);
+
+// g(2).then(console.log);
