@@ -112,6 +112,9 @@ export const L = {};
 //   return acc;
 // });
 
+const lift = (a, f) => (a instanceof Promise ? a.then(f) : f(a));
+const go1 = lift;
+
 export const reduce = curry((fn, acc, iter) => {
   if (!iter) {
     iter = acc[Symbol.iterator]();
@@ -120,7 +123,7 @@ export const reduce = curry((fn, acc, iter) => {
     iter = iter[Symbol.iterator]();
   }
 
-  return (function recur(acc) {
+  return go1(acc, function recur(acc) {
     let cur;
     while (!(cur = iter.next()).done) {
       const a = cur.value;
@@ -130,7 +133,7 @@ export const reduce = curry((fn, acc, iter) => {
       }
     }
     return acc;
-  })(acc);
+  });
 });
 
 export const go = (...args) => {
