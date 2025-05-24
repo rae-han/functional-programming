@@ -1,17 +1,17 @@
 export const products = [
-	{ name: '반팔티', price: 15000 },
-	{ name: '긴팔티', price: 20000 },
-	{ name: '핸드폰케이스', price: 15000 },
-	{ name: '후드티', price: 30000 },
-	{ name: '바지', price: 25000 },
+  { name: '반팔티', price: 15000 },
+  { name: '긴팔티', price: 20000 },
+  { name: '핸드폰케이스', price: 15000 },
+  { name: '후드티', price: 30000 },
+  { name: '바지', price: 25000 },
 ];
 
 export const add = (a, b) => a + b;
 
 export const curry =
-	(fn) =>
-	(arg, ...args) =>
-		args.length ? fn(arg, ...args) : (...args) => fn(arg, ...args);
+  (fn) =>
+  (arg, ...args) =>
+    args.length ? fn(arg, ...args) : (...args) => fn(arg, ...args);
 
 export const L = {};
 
@@ -79,47 +79,86 @@ export const L = {};
 // 	return acc;
 // });
 
-export const reduce = curry((fn, acc, iter) => {
-	if (!iter) {
-		iter = acc[Symbol.iterator]();
-		acc = iter.next().value;
-	}
+// 1
+// export const reduce = curry((fn, acc, iter) => {
+// 	if (!iter) {
+// 		iter = acc[Symbol.iterator]();
+// 		acc = iter.next().value;
+// 	}
 
-	iter = iter[Symbol.iterator]();
-	let cur;
-	while (!(cur = iter.next()).done) {
-		const a = cur.value;
-		acc = fn(acc, a);
-	}
-	return acc;
+// 	iter = iter[Symbol.iterator]();
+// 	let cur;
+// 	while (!(cur = iter.next()).done) {
+// 		const a = cur.value;
+// 		acc = fn(acc, a);
+// 	}
+// 	return acc;
+// });
+
+// 2
+// export const reduce = curry((fn, acc, iter) => {
+//   if (!iter) {
+//     iter = acc[Symbol.iterator]();
+//     acc = iter.next().value;
+//   }
+
+//   iter = iter[Symbol.iterator]();
+//   let cur;
+//   while (!(cur = iter.next()).done) {
+//     const a = cur.value;
+//     // acc = fn(acc, a);
+//     acc = acc instanceof Promise ? acc.then((acc) => fn(acc, a)) : fn(acc, a);
+//   }
+//   return acc;
+// });
+
+export const reduce = curry((fn, acc, iter) => {
+  if (!iter) {
+    iter = acc[Symbol.iterator]();
+    acc = iter.next().value;
+  } else {
+    iter = iter[Symbol.iterator]();
+  }
+
+  return (function recur(acc) {
+    let cur;
+    while (!(cur = iter.next()).done) {
+      const a = cur.value;
+      acc = fn(acc, a);
+      if (acc instanceof Promise) {
+        return acc.then(recur);
+      }
+    }
+    return acc;
+  })(acc);
 });
 
 export const go = (...args) => {
-	return reduce((a, f) => f(a), args);
+  return reduce((a, f) => f(a), args);
 };
 
 export const pipe =
-	(fn, ...fns) =>
-	(...args) =>
-		go(fn(...args), ...fns);
+  (fn, ...fns) =>
+  (...args) =>
+    go(fn(...args), ...fns);
 
 export const range = (length) => {
-	let i = -1;
-	const result = [];
+  let i = -1;
+  const result = [];
 
-	while (++i < length) {
-		result.push(i);
-	}
+  while (++i < length) {
+    result.push(i);
+  }
 
-	return result;
+  return result;
 };
 
 L.range = function* (length) {
-	let i = -1;
+  let i = -1;
 
-	while (++i < length) {
-		yield i;
-	}
+  while (++i < length) {
+    yield i;
+  }
 };
 
 // export const take = curry((l, iter) => {
@@ -137,21 +176,21 @@ L.range = function* (length) {
 // });
 
 export const take = curry((l, iter) => {
-	console.log('take', { l, iter });
-	let res = [];
+  console.log('take', { l, iter });
+  let res = [];
 
-	iter = iter[Symbol.iterator]();
-	let cur;
-	while (!(cur = iter.next()).done) {
-		const a = cur.value;
-		res.push(a);
+  iter = iter[Symbol.iterator]();
+  let cur;
+  while (!(cur = iter.next()).done) {
+    const a = cur.value;
+    res.push(a);
 
-		if (res.length >= l) {
-			return res;
-		}
-	}
+    if (res.length >= l) {
+      return res;
+    }
+  }
 
-	return res;
+  return res;
 });
 
 // 로그를 하나하나 찍기 위한 명령형
@@ -173,26 +212,26 @@ export const take = curry((l, iter) => {
 // });
 
 L.map = curry(function* (fn, iter) {
-	for (const a of iter) {
-		yield fn(a);
-	}
+  for (const a of iter) {
+    yield fn(a);
+  }
 });
 L.filter = curry(function* (fn, iter) {
-	for (const a of iter) {
-		if (fn(a)) yield a;
-	}
+  for (const a of iter) {
+    if (fn(a)) yield a;
+  }
 });
 
 export const join = curry((sep = ',', iter) =>
-	reduce((a, b) => `${a}${sep}${b}`, iter),
+  reduce((a, b) => `${a}${sep}${b}`, iter),
 );
 
 L.entries = function* (obj) {
-	for (const k in obj) yield [k, obj[k]];
+  for (const k in obj) yield [k, obj[k]];
 };
 
 export const find = curry((fn, iter) =>
-	go(iter, L.filter(fn), take(1), ([a]) => a),
+  go(iter, L.filter(fn), take(1), ([a]) => a),
 );
 
 // 3
@@ -226,25 +265,25 @@ const isIterable = (a) => !!a?.[Symbol.iterator];
 // };
 
 L.flatten = function* (iter) {
-	for (const a of iter) {
-		if (isIterable(a)) {
-			yield* a;
-		} else {
-			yield a;
-		}
-	}
+  for (const a of iter) {
+    if (isIterable(a)) {
+      yield* a;
+    } else {
+      yield a;
+    }
+  }
 };
 
 export const flatten = pipe(L.flatten, takeAll);
 
 L.deepFlat = function* f(iter) {
-	for (const a of iter) {
-		if (isIterable(a)) {
-			yield* f(a);
-		} else {
-			yield a;
-		}
-	}
+  for (const a of iter) {
+    if (isIterable(a)) {
+      yield* f(a);
+    } else {
+      yield a;
+    }
+  }
 };
 
 L.flatMap = curry(pipe(L.map, L.flatten));
