@@ -113,7 +113,7 @@ export const L = {};
 // });
 
 const lift = (a, f) => (a instanceof Promise ? a.then(f) : f(a));
-const go1 = lift;
+const go1 = (a, f) => (a instanceof Promise ? a.then(f) : f(a));
 
 export const reduce = curry((fn, acc, iter) => {
   if (!iter) {
@@ -179,21 +179,35 @@ L.range = function* (length) {
 // });
 
 export const take = curry((l, iter) => {
-  console.log('take', { l, iter });
   let res = [];
-
   iter = iter[Symbol.iterator]();
-  let cur;
-  while (!(cur = iter.next()).done) {
-    const a = cur.value;
-    res.push(a);
 
-    if (res.length >= l) {
-      return res;
+  return (function recur() {
+    let cur;
+    while (!(cur = iter.next()).done) {
+      const a = cur.value;
+
+      if (a instanceof Promise) {
+        return a.then((a) => {
+          res.push(a);
+
+          if (res.length >= l) {
+            return res;
+          }
+
+          return recur();
+        });
+      }
+
+      res.push(a);
+
+      if (res.length >= l) {
+        return res;
+      }
     }
-  }
 
-  return res;
+    return res;
+  })();
 });
 
 // 로그를 하나하나 찍기 위한 명령형
@@ -216,7 +230,7 @@ export const take = curry((l, iter) => {
 
 L.map = curry(function* (fn, iter) {
   for (const a of iter) {
-    yield fn(a);
+    yield go1(a, fn);
   }
 });
 L.filter = curry(function* (fn, iter) {
