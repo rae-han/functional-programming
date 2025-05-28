@@ -188,15 +188,7 @@ export const take = curry((l, iter) => {
       const a = cur.value;
 
       if (a instanceof Promise) {
-        return a.then((a) => {
-          res.push(a);
-
-          if (res.length >= l) {
-            return res;
-          }
-
-          return recur();
-        });
+        return a.then((a) => ((res.push(a), res).length >= l ? res : recur()));
       }
 
       res.push(a);

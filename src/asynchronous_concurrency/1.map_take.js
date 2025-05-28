@@ -1,8 +1,14 @@
-import { go, L, take } from '../fxjs';
+import { go, L, map, range, take } from '../fxjs';
 
 go(
-  [Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)],
-  L.map((a) => a + 10),
+  [1, 2, 3],
+  L.map((a) => Promise.resolve(a + 10)),
   take(2),
   console.log,
-); // [ '[object Promise]10', '[object Promise]10' ]
+);
+
+go(
+  [1, 2, 3],
+  map((a) => a + 10),
+  console.log,
+);
