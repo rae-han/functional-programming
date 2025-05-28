@@ -188,7 +188,13 @@ export const take = curry((l, iter) => {
       const a = cur.value;
 
       if (a instanceof Promise) {
-        return a.then((a) => ((res.push(a), res).length >= l ? res : recur()));
+        return a
+          .then((a) => {
+            res.push(a);
+
+            return res.length >= l ? res : recur();
+          })
+          .catch((e) => (e === nop ? recur() : Promise.reject(e)));
       }
 
       res.push(a);
@@ -220,14 +226,33 @@ export const take = curry((l, iter) => {
 // 	}
 // });
 
+// L.map = curry(function* (fn, iter) {
+//   for (const a of iter) {
+//     yield fn(a);
+//   }
+// });
 L.map = curry(function* (fn, iter) {
   for (const a of iter) {
     yield go1(a, fn);
   }
 });
+// L.filter = curry(function* (fn, iter) {
+//   for (const a of iter) {
+//     if (fn(a)) yield a;
+//   }
+// });
+const nop = Symbol('nop');
 L.filter = curry(function* (fn, iter) {
   for (const a of iter) {
-    if (fn(a)) yield a;
+    const b = go1(a, fn);
+
+    if (b instanceof Promise) {
+      yield b.then((b) => {
+        return b ? a : Promise.reject(nop);
+      });
+    } else if (b) {
+      yield a;
+    }
   }
 });
 
