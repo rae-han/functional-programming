@@ -116,3 +116,7 @@ const [first, sencond] = fx([1, 2, 3, 4])
   .map((x) => x * 2)
   .toArray();
 console.log(first, sencond);
+
+export { map, filter, reduce, take, fx, forEach };
+
+export default FxIterable;
