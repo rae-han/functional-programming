@@ -115,6 +115,38 @@ export const L = {};
 const lift = (a, f) => (a instanceof Promise ? a.then(f) : f(a));
 const go1 = (a, f) => (a instanceof Promise ? a.then(f) : f(a));
 
+// 3
+// export const reduce = curry((fn, acc, iter) => {
+//   if (!iter) {
+//     iter = acc[Symbol.iterator]();
+//     acc = iter.next().value;
+//   } else {
+//     iter = iter[Symbol.iterator]();
+//   }
+
+//   return go1(acc, function recur(acc) {
+//     let cur;
+//     while (!(cur = iter.next()).done) {
+//       const a = cur.value;
+//       acc = fn(acc, a);
+//       if (acc instanceof Promise) {
+//         return acc.then(recur);
+//       }
+//     }
+//     return acc;
+//   });
+// });
+
+// 4
+const reduceF = (acc, a, f) =>
+  a instanceof Promise
+    ? a
+        .then((a) => f(acc, a))
+        .catch({
+          /* 에러 로직 */
+        })
+    : f(acc, a);
+
 export const reduce = curry((fn, acc, iter) => {
   if (!iter) {
     iter = acc[Symbol.iterator]();
@@ -126,8 +158,7 @@ export const reduce = curry((fn, acc, iter) => {
   return go1(acc, function recur(acc) {
     let cur;
     while (!(cur = iter.next()).done) {
-      const a = cur.value;
-      acc = fn(acc, a);
+      acc = reduceF(acc, cur.value, fn);
       if (acc instanceof Promise) {
         return acc.then(recur);
       }
