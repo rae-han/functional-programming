@@ -11,7 +11,7 @@ function getFile(name: string, size = 1000): Promise<File> {
 }
 
 /**
- * promise all
+ * Promise.all
  */
 // const files = await Promise.all([
 //   getFile('img.png', 500),
@@ -35,7 +35,7 @@ function getFile(name: string, size = 1000): Promise<File> {
 // }
 
 /**
- * promise allSettled
+ * Promise.allSettled
  */
 // const files = await Promise.allSettled([
 //   getFile('img.png'),
@@ -52,3 +52,22 @@ function getFile(name: string, size = 1000): Promise<File> {
 // //   { status: 'fulfilled', value: { name: 'index.html', body: '...', size: 1000 } },
 // //   { status: 'rejected', reason: 'File download failed' }
 // // ]
+
+/**
+ * Promise.any
+ */
+const settlePromise = <T>(promise: Promise<T>) =>
+  promise
+    .then((value) => ({ status: 'fulfilled', value }))
+    .catch((reason) => ({ status: 'rejected', reason }));
+
+const files = await Promise.all(
+  [
+    getFile('img.png'),
+    getFile('book.pdf'),
+    getFile('index.html'),
+    Promise.reject('File download failed'),
+  ].map(settlePromise),
+);
+
+console.log(files);
