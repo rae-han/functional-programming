@@ -50,30 +50,61 @@ interface AsyncIterableIterator<T> extends AsyncIterator<T> {
 /**
  * toAsync with async iterator
  */
-function toAsync<T>(
+// function toAsync<T>(
+//   iterable: Iterable<T | Promise<T>>,
+// ): AsyncIterable<Awaited<T>> {
+//   return {
+//     [Symbol.asyncIterator](): AsyncIterator<Awaited<T>> {
+//       const iterator = iterable[Symbol.iterator]();
+//       return {
+//         async next() {
+//           const { done, value } = iterator.next();
+//           return done ? { done, value } : { done, value: await value };
+//         },
+//       };
+//     },
+//   };
+// }
+
+// async function test() {
+//   const asyncIterable = toAsync([1]);
+//   const asyncIterator = asyncIterable[Symbol.asyncIterator]();
+//   await asyncIterator.next().then(({ value }) => console.log(value));
+
+//   const asyncIterable2 = toAsync([Promise.resolve(2)]);
+//   const asyncIterator2 = asyncIterable2[Symbol.asyncIterator]();
+//   await asyncIterator2.next().then(({ value }) => console.log(value));
+// }
+
+// await test();
+
+/**
+ * toAsync with async genrator
+ */
+async function* toAsync<T>(
   iterable: Iterable<T | Promise<T>>,
-): AsyncIterable<Awaited<T>> {
-  return {
-    [Symbol.asyncIterator](): AsyncIterator<Awaited<T>> {
-      const iterator = iterable[Symbol.iterator]();
-      return {
-        async next() {
-          const { done, value } = iterator.next();
-          return done ? { done, value } : { done, value: await value };
-        },
-      };
-    },
-  };
+): AsyncIterableIterator<Awaited<T>> {
+  for await (const value of iterable) {
+    yield value;
+  }
 }
 
-async function test() {
-  const asyncIterable = toAsync([1]);
-  const asyncIterator = asyncIterable[Symbol.asyncIterator]();
-  await asyncIterator.next().then(({ value }) => console.log(value));
-
-  const asyncIterable2 = toAsync([Promise.resolve(2)]);
-  const asyncIterator2 = asyncIterable2[Symbol.asyncIterator]();
-  await asyncIterator2.next().then(({ value }) => console.log(value));
+// (1)
+for await (const a of toAsync([1, 2])) {
+  console.log(a);
 }
 
-await test();
+// (2)
+for await (const a of toAsync([Promise.resolve(1), Promise.resolve(2)])) {
+  console.log(a);
+}
+
+// (3)
+for await (const a of [1, 2]) {
+  console.log(a);
+}
+
+// (4)
+for await (const a of [Promise.resolve(1), Promise.resolve(2)]) {
+  console.log(a);
+}
