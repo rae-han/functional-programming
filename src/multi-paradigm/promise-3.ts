@@ -89,22 +89,22 @@ async function* toAsync<T>(
   }
 }
 
-// (1)
-for await (const a of toAsync([1, 2])) {
-  console.log(a);
-}
+// // (1)
+// for await (const a of toAsync([1, 2])) {
+//   console.log(a);
+// }
 
-// (2)
-for await (const a of toAsync([Promise.resolve(1), Promise.resolve(2)])) {
-  console.log(a);
-}
+// // (2)
+// for await (const a of toAsync([Promise.resolve(1), Promise.resolve(2)])) {
+//   console.log(a);
+// }
 
-// (3)
-for await (const a of [1, 2]) {
-  console.log(a);
-}
+// // (3)
+// for await (const a of [1, 2]) {
+//   console.log(a);
+// }
 
-// (4)
-for await (const a of [Promise.resolve(1), Promise.resolve(2)]) {
-  console.log(a);
-}
+// // (4)
+// for await (const a of [Promise.resolve(1), Promise.resolve(2)]) {
+//   console.log(a);
+// }
