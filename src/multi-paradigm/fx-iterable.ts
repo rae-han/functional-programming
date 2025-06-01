@@ -4,19 +4,19 @@ function forEach(f, iterable) {
   }
 }
 
-function* map(f, iterable) {
-  for (const value of iterable) {
-    yield f(value);
-  }
-}
+// function* map(f, iterable) {
+//   for (const value of iterable) {
+//     yield f(value);
+//   }
+// }
 
-function* filter(f, iterable) {
-  for (const value of iterable) {
-    if (f(value)) {
-      yield value;
-    }
-  }
-}
+// function* filter(f, iterable) {
+//   for (const value of iterable) {
+//     if (f(value)) {
+//       yield value;
+//     }
+//   }
+// }
 
 function baseReduce<A, Acc>(
   f: (acc: Acc, a: A) => Acc,
@@ -102,6 +102,83 @@ async function* toAsync<T>(
   for await (const value of iterable) {
     yield value;
   }
+}
+
+function isIterable<T = unknown>(a: Iterable<T> | unknown): a is Iterable<T> {
+  return typeof a?.[Symbol.iterator] === 'function';
+}
+
+function* mapSync<A, B>(
+  f: (a: A) => B,
+  iterable: Iterable<A>,
+): IterableIterator<B> {
+  for (const value of iterable) {
+    yield f(value);
+  }
+}
+
+async function* mapAsync<A, B>(
+  f: (a: A) => B,
+  asyncIterable: AsyncIterable<A>,
+): AsyncIterableIterator<Awaited<B>> {
+  for await (const value of asyncIterable) {
+    yield f(value);
+  }
+}
+
+function map<A, B>(f: (a: A) => B, iterable: Iterable<A>): IterableIterator<B>;
+function map<A, B>(
+  f: (a: A) => B,
+  asyncIterable: AsyncIterable<A>,
+): AsyncIterableIterator<Awaited<B>>;
+
+function map<A, B>(
+  f: (a: A) => B,
+  iterable: Iterable<A> | AsyncIterable<A>,
+): IterableIterator<B> | AsyncIterableIterator<Awaited<B>> {
+  return isIterable(iterable)
+    ? mapSync(f, iterable) // [iterable: Iterable<A>]
+    : mapAsync(f, iterable); // [iterable: AsyncIterable<A>]
+}
+
+function* filterSync<A>(
+  f: (a: A) => boolean,
+  iterable: Iterable<A>,
+): IterableIterator<A> {
+  for (const value of iterable) {
+    if (f(value)) {
+      yield value;
+    }
+  }
+}
+
+async function* filterAsync<A>(
+  f: (a: A) => boolean | Promise<boolean>,
+  asyncIterable: AsyncIterable<A>,
+): AsyncIterableIterator<A> {
+  for await (const value of asyncIterable) {
+    if (await f(value)) {
+      yield value;
+    }
+  }
+}
+
+function filter<A>(
+  f: (a: A) => boolean,
+  iterable: Iterable<A>,
+): IterableIterator<A>;
+function filter<A>(
+  f: (a: A) => boolean | Promise<boolean>,
+  asyncIterable: AsyncIterable<A>,
+): AsyncIterableIterator<A>;
+
+function filter<A>(
+  f: (a: A) => boolean | Promise<boolean>,
+  iterable: Iterable<A> | AsyncIterable<A>,
+): IterableIterator<A> | AsyncIterableIterator<A> {
+  return isIterable(iterable)
+    ? filterSync(f as (a: A) => boolean, iterable)
+    : filterAsync(f, iterable);
 }
 
 function fx<A>(iterable: Iterable<A>): FxIterable<A> {
