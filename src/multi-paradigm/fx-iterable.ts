@@ -6,7 +6,6 @@ function forEach(f, iterable) {
 
 function* map(f, iterable) {
   for (const value of iterable) {
-    console.log(1111, { value });
     yield f(value);
   }
 }
@@ -72,6 +71,31 @@ function* take<A>(limit: number, iterable: Iterable<A>): IterableIterator<A> {
   }
 }
 
+function* chunk<T>(size: number, iterable: Iterable<T>): IterableIterator<T[]> {
+  const iterator = iterable[Symbol.iterator]();
+  while (true) {
+    const arr = [
+      ...take(size, {
+        [Symbol.iterator]() {
+          return iterator;
+        },
+      }),
+    ];
+    if (arr.length) yield arr;
+    if (arr.length < size) break;
+  }
+}
+
+async function fromAsync<T>(
+  iterable: Iterable<Promise<T>> | AsyncIterable<T>,
+): Promise<T[]> {
+  const arr: T[] = [];
+  for await (const a of iterable) {
+    arr.push(a);
+  }
+  return arr;
+}
+
 function fx<A>(iterable: Iterable<A>): FxIterable<A> {
   return new FxIterable(iterable);
 }
@@ -110,13 +134,20 @@ class FxIterable<A> {
   take(limit: number): FxIterable<A> {
     return fx(take(limit, this)); // new FxIterable(take(limit, this));
   }
+
+  chunk(size: number) {
+    return fx(chunk(size, this));
+  }
 }
 
 const [first, sencond] = fx([1, 2, 3, 4])
   .map((x) => x * 2)
   .toArray();
-console.log(first, sencond);
 
-export { map, filter, reduce, take, fx, forEach };
+function delay<T>(time: number, value: T): Promise<T> {
+  return new Promise((resolve) => setTimeout(resolve, time, value));
+}
+
+export { map, filter, reduce, take, fx, forEach, delay, chunk, fromAsync };
 
 export default FxIterable;

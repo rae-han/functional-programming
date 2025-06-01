@@ -54,20 +54,45 @@ function getFile(name: string, size = 1000): Promise<File> {
 // // ]
 
 /**
+ * Promise.allSettled before ES11
+ */
+// const settlePromise = <T>(promise: Promise<T>) =>
+//   promise
+//     .then((value) => ({ status: 'fulfilled', value }))
+//     .catch((reason) => ({ status: 'rejected', reason }));
+
+// const files = await Promise.all(
+//   [
+//     getFile('img.png'),
+//     getFile('book.pdf'),
+//     getFile('index.html'),
+//     Promise.reject('File download failed'),
+//   ].map(settlePromise),
+// );
+
+// console.log(files);
+
+/**
  * Promise.any
  */
-const settlePromise = <T>(promise: Promise<T>) =>
-  promise
-    .then((value) => ({ status: 'fulfilled', value }))
-    .catch((reason) => ({ status: 'rejected', reason }));
-
-const files = await Promise.all(
-  [
-    getFile('img.png'),
-    getFile('book.pdf'),
-    getFile('index.html'),
-    Promise.reject('File download failed'),
-  ].map(settlePromise),
-);
+const files = await Promise.any([
+  getFile('img.png', 1500),
+  getFile('book.pdf', 700),
+  getFile('index.html', 900),
+  new Promise((_, reject) =>
+    setTimeout(() => reject('File download failed'), 100),
+  ),
+]);
 
 console.log(files);
+// After about 700ms
+// { name: 'book.pdf', body: '...', size: 700 }
+
+const allRejectedFiles = await Promise.any([
+  delay(200, Promise.reject('File download failed')),
+  delay(100, Promise.reject('File download failed')),
+]);
+
+console.log(allRejectedFiles);
+// After about 200ms
+// Uncaught (in promise) AggregateError: All promises were rejected
