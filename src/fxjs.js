@@ -138,22 +138,34 @@ const go1 = (a, f) => (a instanceof Promise ? a.then(f) : f(a));
 // });
 
 // 4
+// const reduceF = (acc, a, f) =>
+//   a instanceof Promise
+//     ? a
+//         .then((a) => f(acc, a))
+//         .catch({
+//           /* 에러 로직 */
+//         })
+//     : f(acc, a);
+
+// 5
 const reduceF = (acc, a, f) =>
   a instanceof Promise
-    ? a
-        .then((a) => f(acc, a))
-        .catch({
-          /* 에러 로직 */
-        })
+    ? a.then(
+        (a) => f(acc, a),
+        (e) => (e === nop ? acc : Promise.reject(e)),
+      )
     : f(acc, a);
+
+export const head = (iter) => go1(take(1, iter), ([a]) => a);
 
 export const reduce = curry((fn, acc, iter) => {
   if (!iter) {
-    iter = acc[Symbol.iterator]();
-    acc = iter.next().value;
-  } else {
-    iter = iter[Symbol.iterator]();
+    // iter = acc[Symbol.iterator]();
+    // acc = iter.next().value;
+    return reduce(fn, head((iter = acc[Symbol.iterator]())), iter);
   }
+
+  iter = iter[Symbol.iterator]();
 
   return go1(acc, function recur(acc) {
     let cur;
@@ -241,16 +253,12 @@ export const take = curry((l, iter) => {
 
 // 로그를 하나하나 찍기 위한 명령형
 // L.map = curry(function* (f, iter) {
-// 	console.log('map 2');
 // 	for (const a of iter) {
-// 		console.log('map yield', { a });
 // 		yield f(a);
 // 	}
 // });
 // L.filter = curry(function* (f, iter) {
-// 	console.log('filter 1');
 // 	for (const a of iter) {
-// 		console.log('filter yield', { a, f: f(a) });
 // 		if (f(a)) {
 // 			yield a;
 // 		}

@@ -294,41 +294,41 @@ function map<A, B>(
     : mapAsync(f, iterable); // [iterable: AsyncIterable<A>]
 }
 
-const iter1: IterableIterator<string> = map((a: number) => a.toFixed(), [1, 2]);
+// const iter1: IterableIterator<string> = map((a: number) => a.toFixed(), [1, 2]);
 
-const iter2: IterableIterator<Promise<string>> = map(
-  (a: number) => Promise.resolve(a.toFixed()),
-  [1, 2],
-);
+// const iter2: IterableIterator<Promise<string>> = map(
+//   (a: number) => Promise.resolve(a.toFixed()),
+//   [1, 2],
+// );
 
-const iter3: AsyncIterableIterator<string> = map(
-  (a: number) => a.toFixed(),
-  toAsync([1, 2]),
-);
+// const iter3: AsyncIterableIterator<string> = map(
+//   (a: number) => a.toFixed(),
+//   toAsync([1, 2]),
+// );
 
-const iter4: AsyncIterableIterator<string> = map(
-  (a: number) => Promise.resolve(a.toFixed()),
-  toAsync([1, 2]),
-);
+// const iter4: AsyncIterableIterator<string> = map(
+//   (a: number) => Promise.resolve(a.toFixed()),
+//   toAsync([1, 2]),
+// );
 
-const iter5: AsyncIterableIterator<string> = map(
-  (a: number) => a.toFixed(),
-  toAsync([Promise.resolve(1), Promise.resolve(2)]),
-);
+// const iter5: AsyncIterableIterator<string> = map(
+//   (a: number) => a.toFixed(),
+//   toAsync([Promise.resolve(1), Promise.resolve(2)]),
+// );
 
-const iter6: AsyncIterableIterator<string> = map(
-  (a: number) => Promise.resolve(a.toFixed()),
-  toAsync([Promise.resolve(1), Promise.resolve(2)]),
-);
+// const iter6: AsyncIterableIterator<string> = map(
+//   (a: number) => Promise.resolve(a.toFixed()),
+//   toAsync([Promise.resolve(1), Promise.resolve(2)]),
+// );
 
-console.log({
-  iter1,
-  iter2,
-  iter3,
-  iter4,
-  iter5,
-  iter6,
-});
+// console.log({
+//   iter1,
+//   iter2,
+//   iter3,
+//   iter4,
+//   iter5,
+//   iter6,
+// });
 
 // (1)
 console.log([...map((a) => a * 10, [1, 2])]);
@@ -361,3 +361,35 @@ function filter<A>(
     ? filterSync(f as (a: A) => boolean, iterable)
     : filterAsync(f, iterable);
 }
+
+// (1)
+const iter1: IterableIterator<number> = filter(
+  (a: number) => a % 2 === 1,
+  [1, 2],
+);
+
+// (2)
+// Error TS2769: No overload matches this call.
+// const iter2 = filter(
+//   (a: number) => Promise.resolve(a % 2 === 1), // Error
+//   [1, 2]
+// );
+
+// (3)
+const iter3: AsyncIterableIterator<number> = filter(
+  (a: number) => a % 2 === 1,
+  toAsync([1, 2]),
+);
+
+// (4)
+const iter4: AsyncIterableIterator<number> = filter(
+  (a: number) => Promise.resolve(a % 2 === 1),
+  toAsync([1, 2]),
+);
+
+console.log({
+  iter1,
+  // iter2,
+  iter3,
+  iter4,
+});
