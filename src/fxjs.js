@@ -386,3 +386,6 @@ C.reduce = curry((fn, acc, iter) => {
 
 C.take = curry((l, iter) => take(l, catchNoop([...iter])));
 C.takeAll = C.take(Infinity);
+
+C.map = curry(pipe(L.map, C.takeAll));
+C.filter = curry(pipe(L.filter, C.takeAll));
