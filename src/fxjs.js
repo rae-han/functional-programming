@@ -373,3 +373,13 @@ export const flatMap = curry(pipe(L.flatMap, takeAll));
 // C.reduceTest = curry((fn, acc, iter) =>
 //   iter ? reduce(fn, acc, iter) : reduce(fn, acc),
 // );
+function noop() {}
+const catchNoop = (arr) => (
+  arr.forEach((a) => (a instanceof Promise ? a.catch(noop) : a)), arr
+);
+
+C.reduce = curry((fn, acc, iter) => {
+  const iter2 = catchNoop(iter ? [...iter] : [...acc]);
+
+  return iter ? reduce(fn, acc, iter2) : reduce(fn, iter2);
+});
