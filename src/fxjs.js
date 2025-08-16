@@ -383,3 +383,5 @@ C.reduce = curry((fn, acc, iter) => {
 
   return iter ? reduce(fn, acc, iter2) : reduce(fn, iter2);
 });
+
+C.take = curry((l, iter) => take(l, catchNoop([...iter])));
