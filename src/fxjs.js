@@ -392,8 +392,12 @@ const catchNoop = ([...arr]) => (
 //   return iter ? reduce(fn, acc, iter2) : reduce(fn, iter2);
 // });
 
+// C.reduce = curry((fn, acc, iter) =>
+//   iter ? reduce(fn, acc, catchNoop(iter)) : reduce(fn, catchNoop(acc)),
+// );
+
 C.reduce = curry((fn, acc, iter) =>
-  iter ? reduce(fn, acc, catchNoop(iter)) : reduce(fn, catchNoop(acc)),
+  reduce(fn, ...(iter ? [acc, catchNoop(iter)] : [catchNoop(acc)])),
 );
 
 C.take = curry((l, iter) => take(l, catchNoop(iter)));
