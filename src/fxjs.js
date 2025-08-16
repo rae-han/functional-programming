@@ -366,6 +366,14 @@ L.flatMap = curry(pipe(L.map, L.flatten));
 
 export const flatMap = curry(pipe(L.flatMap, takeAll));
 
+export const delay1000 = (a, time = 500) =>
+  new Promise((resolve) =>
+    setTimeout(() => {
+      console.log('hi! concurrent.');
+      resolve(a);
+    }, time),
+  );
+
 // C.reduce = curry((fn, acc, iter) =>
 //   iter ? reduce(fn, acc, [...iter]) : reduce(fn, [...acc]),
 // );

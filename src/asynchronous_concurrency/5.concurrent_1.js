@@ -1,11 +1,11 @@
 import { add, C, filter, go, L, map, reduce } from '../fxjs';
 
-const delay1000 = (a) =>
+const delay1000 = (a, time = 500) =>
   new Promise((resolve) =>
     setTimeout(() => {
       console.log('hi! concurrent.');
       resolve(a);
-    }, 500),
+    }, time),
   );
 
 // go(
