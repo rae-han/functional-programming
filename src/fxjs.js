@@ -14,6 +14,7 @@ export const curry =
     args.length ? fn(arg, ...args) : (...args) => fn(arg, ...args);
 
 export const L = {};
+export const C = {};
 
 // export const map = curry((fn, iter) => {
 // 	let result = [];
@@ -272,6 +273,7 @@ export const take = curry((l, iter) => {
 // });
 L.map = curry(function* (fn, iter) {
   for (const a of iter) {
+    console.log('map');
     yield go1(a, fn);
   }
 });
@@ -284,6 +286,7 @@ const nop = Symbol('nop');
 L.filter = curry(function* (fn, iter) {
   for (const a of iter) {
     const b = go1(a, fn);
+    console.log('filter');
 
     if (b instanceof Promise) {
       yield b.then((b) => {
@@ -362,3 +365,26 @@ L.deepFlat = function* f(iter) {
 L.flatMap = curry(pipe(L.map, L.flatten));
 
 export const flatMap = curry(pipe(L.flatMap, takeAll));
+
+// C.reduce = curry((fn, acc, iter) =>
+//   iter ? reduce(fn, acc, [...iter]) : reduce(fn, [...acc]),
+// );
+
+// C.reduceTest = curry((fn, acc, iter) =>
+//   iter ? reduce(fn, acc, iter) : reduce(fn, acc),
+// );
+
+function noop() {}
+const catchNoop = (arr) => (
+  arr.forEach((a) => (a instanceof Promise ? a.catch(noop) : a)), arr
+);
+
+C.reduce = curry((fn, acc, iter) => {
+  const iter2 = catchNoop(iter ? [...iter] : [...acc]);
+
+  return iter ? reduce(fn, acc, iter2) : reduce(fn, iter2);
+});
+
+C.take = curry((l, iter) => take(l, catchNoop([...iter])));
+
+C.takeAll = C.take(Infinity);
