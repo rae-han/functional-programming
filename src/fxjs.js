@@ -382,17 +382,21 @@ export const delay1000 = (a, time = 500) =>
 //   iter ? reduce(fn, acc, iter) : reduce(fn, acc),
 // );
 function noop() {}
-const catchNoop = (arr) => (
+const catchNoop = ([...arr]) => (
   arr.forEach((a) => (a instanceof Promise ? a.catch(noop) : a)), arr
 );
 
-C.reduce = curry((fn, acc, iter) => {
-  const iter2 = catchNoop(iter ? [...iter] : [...acc]);
+// C.reduce = curry((fn, acc, iter) => {
+//   const iter2 = catchNoop(iter ? [...iter] : [...acc]);
 
-  return iter ? reduce(fn, acc, iter2) : reduce(fn, iter2);
-});
+//   return iter ? reduce(fn, acc, iter2) : reduce(fn, iter2);
+// });
 
-C.take = curry((l, iter) => take(l, catchNoop([...iter])));
+C.reduce = curry((fn, acc, iter) =>
+  iter ? reduce(fn, acc, catchNoop(iter)) : reduce(fn, catchNoop(acc)),
+);
+
+C.take = curry((l, iter) => take(l, catchNoop(iter)));
 C.takeAll = C.take(Infinity);
 
 C.map = curry(pipe(L.map, C.takeAll));
