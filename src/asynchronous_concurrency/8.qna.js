@@ -1,4 +1,4 @@
-import { map } from '../fxjs';
+import { go, L, map, reduce, take } from '../fxjs';
 /**
  * Array.prototype.map을 안쓰고 FxJS의 map 함수가 필요한 이유
  */
@@ -17,7 +17,7 @@ async function fn1() {
   const result = await response;
   console.log(result);
 }
-fn1();
+// fn1();
 
 async function fn2() {
   const list = [1, 2, 3, 4];
@@ -26,4 +26,20 @@ async function fn2() {
   const result = await response;
   console.log(result);
 }
-fn2();
+// fn2();
+
+/**
+ * async/await로 비동기 제어가 가능한데 왜 파이프라인이 필요한가?
+ */
+function f3(list) {
+  return go(
+    list,
+    L.map((a) => delay(a * a)),
+    L.filter((a) => a % 2),
+    L.map((a) => delay(a + 1)),
+    take(3),
+    reduce((a, b) => delay(a + b)),
+  );
+}
+
+go(f3([1, 2, 3, 4, 5, 6, 7, 8]), console.log); // 38
