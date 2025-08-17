@@ -273,7 +273,7 @@ export const take = curry((l, iter) => {
 // });
 L.map = curry(function* (fn, iter) {
   for (const a of iter) {
-    console.log('map');
+    // console.log('map');
     yield go1(a, fn);
   }
 });
