@@ -7,5 +7,10 @@ async function f1() {
 
   return a + b;
 }
-console.log(f1());
-// f1().then(console.log);
+
+f1().then(console.log);
+
+const p = Promise.resolve(10);
+(async () => {
+  console.log(await p);
+})();
