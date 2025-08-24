@@ -1,4 +1,4 @@
-import { C, go, L, map, reduce, take } from '../fxjs';
+import { C, go, L, filter, map, reduce, take } from '../fxjs';
 /**
  * Array.prototype.map을 안쓰고 FxJS의 map 함수가 필요한 이유
  */
@@ -99,13 +99,18 @@ function f7(list = []) {
   }
 }
 
-console.log(f7(['1', '2', '3', '4'])); // [1, 3]
-console.log(f7(['1', '2', '3', '%'])); // []
+// console.log(f7(['1', '2', '3', '4'])); // [1, 3]
+// console.log(f7(['1', '2', '3', '%'])); // []
 
 function f8(list = []) {
   try {
     return list
-      .map((a) => new Promise((resolve) => { asdf })
+      .map(
+        (a) =>
+          new Promise((resolve) => {
+            resolve(JSON.parse(a));
+          }),
+      )
       .filter((a) => a % 2)
       .slice(0, 2);
   } catch (error) {
@@ -114,4 +119,53 @@ function f8(list = []) {
   }
 }
 
-console.log(f8(['1', '2', '3', '4']));
+// console.log(f8(['1', '2', '3', '4']));
+
+// const p = new Promise((resolve) => {
+//   resolve(JSON.parse('{'));
+// });
+// console.log(p); // Promise { <rejected> ReferenceError: asdf is not defined }
+
+// const p = new Promise((resolve) => {
+//   resolve(JSON.parse('{'));
+// });
+// console.log(p); // Promise { <rejected> SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2) }
+
+async function f9(list = []) {
+  try {
+    return await list
+      .map(
+        async (a) =>
+          await new Promise((resolve) => {
+            resolve(JSON.parse(a));
+          }),
+      )
+      .filter((a) => a % 2)
+      .slice(0, 2);
+  } catch (error) {
+    console.log('error!!', error);
+    return [];
+  }
+}
+
+// console.log(f9(['1', '2', '3', '4']).then(console.log).catch(console.log));
+
+async function f10(list) {
+  try {
+    return go(
+      list,
+      map((a) => new Promise((resolve) => resolve(JSON.parse(a)))),
+      filter((a) => a % 2),
+      take(2),
+    );
+  } catch (error) {
+    console.log('error!!', error);
+    return [];
+  }
+}
+
+console.log(
+  f10(['1', '2', '3', '?'])
+    .then(console.log)
+    .catch((error) => console.log('에러 핸들링 하겠다', error)),
+);
