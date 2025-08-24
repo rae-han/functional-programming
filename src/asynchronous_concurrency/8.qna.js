@@ -150,22 +150,27 @@ async function f9(list = []) {
 
 // console.log(f9(['1', '2', '3', '4']).then(console.log).catch(console.log));
 
+// async function f10(list) {
+//   try {
+//     return go(
+//       list,
+//       map((a) => new Promise((resolve) => resolve(JSON.parse(a)))),
+//       filter((a) => a % 2),
+//       take(2),
+//     );
+//   } catch (error) {
+//     console.log('error!!', error);
+//     return [];
+//   }
+// }
+
 async function f10(list) {
   try {
-    return go(
-      list,
-      map((a) => new Promise((resolve) => resolve(JSON.parse(a)))),
-      filter((a) => a % 2),
-      take(2),
-    );
+    return await Promise.reject('error~~!!');
   } catch (error) {
     console.log('error!!', error);
     return [];
   }
 }
 
-console.log(
-  f10(['1', '2', '3', '?'])
-    .then(console.log)
-    .catch((error) => console.log('에러 핸들링 하겠다', error)),
-);
+console.log(f10(['1', '2', '3', '?']));
