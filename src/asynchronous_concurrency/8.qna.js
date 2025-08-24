@@ -1,4 +1,4 @@
-import { go, L, map, reduce, take } from '../fxjs';
+import { C, go, L, map, reduce, take } from '../fxjs';
 /**
  * Array.prototype.map을 안쓰고 FxJS의 map 함수가 필요한 이유
  */
@@ -42,4 +42,62 @@ function f3(list) {
   );
 }
 
-go(f3([1, 2, 3, 4, 5, 6, 7, 8]), console.log); // 38
+// go(f3([1, 2, 3, 4, 5, 6, 7, 8]), console.log); // 38
+
+async function f4(list) {
+  let temp = [];
+  for (const a of list) {
+    const b = await delay(a * a);
+    if (await delay(b % 2)) {
+      const c = await delay(b + 1);
+      temp.push(c);
+      if (temp.length == 3) break;
+    }
+  }
+  let res = temp[0],
+    i = 0;
+  while (++i < temp.length) {
+    res = await delay(res + temp[i]);
+  }
+  return res;
+}
+
+// go(f4([1, 2, 3, 4, 5, 6, 7, 8]), console.log); // 38
+
+async function f5(list) {
+  const r1 = await go(
+    list,
+    L.map((a) => delay(a * a)),
+    L.filter((a) => delay(a % 2)),
+    L.map((a) => delay(a + 1)),
+    C.take(2),
+    reduce((a, b) => delay(a + b)),
+  );
+
+  const r2 = await go(
+    list,
+    L.map((a) => delay(a * a)),
+    L.filter((a) => delay(a % 2)),
+    reduce((a, b) => delay(a + b)),
+  );
+
+  const r3 = await delay(r1 + r2);
+
+  return r3 + 10;
+}
+
+// go(f5([1, 2, 3, 4, 5, 6, 7, 8]), (a) => console.log(a, 'f5'));
+
+function f7(list = []) {
+  try {
+    return list
+      .map((a) => JSON.parse(a))
+      .filter((a) => a % 2)
+      .slice(0, 2);
+  } catch (error) {
+    return [];
+  }
+}
+
+console.log(f7(['1', '2', '3', '4'])); // [1, 3]
+console.log(f7(['1', '2', '3', '%'])); // []
