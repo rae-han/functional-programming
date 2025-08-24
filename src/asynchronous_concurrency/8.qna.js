@@ -101,3 +101,17 @@ function f7(list = []) {
 
 console.log(f7(['1', '2', '3', '4'])); // [1, 3]
 console.log(f7(['1', '2', '3', '%'])); // []
+
+function f8(list = []) {
+  try {
+    return list
+      .map((a) => new Promise((resolve) => { asdf })
+      .filter((a) => a % 2)
+      .slice(0, 2);
+  } catch (error) {
+    console.log('error!!', error);
+    return [];
+  }
+}
+
+console.log(f8(['1', '2', '3', '4']));
