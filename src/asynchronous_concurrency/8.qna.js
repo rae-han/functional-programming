@@ -168,7 +168,7 @@ async function f10(list) {
   try {
     return await Promise.reject('error~~!!');
   } catch (error) {
-    console.log('error!!', error);
+    console.log('error!!', error); // error!! error~~!!
     return [];
   }
 }
